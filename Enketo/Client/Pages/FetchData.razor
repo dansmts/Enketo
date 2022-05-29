@@ -1,0 +1,43 @@
+﻿@page "/fetchdata"
+@using Enketo.Shared.Core.Domain.Entities
+@using Enketo.Shared.Core.Features.Surveys.Queries
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@using System.Text.Json
+@attribute [Authorize]
+@inject HttpClient Http
+
+<PageTitle>Weather forecast</PageTitle>
+
+<h1>Weather forecast</h1>
+
+<p>This component demonstrates fetching data from the server.</p>
+
+@if (_model == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+   @foreach(var survey in _model.Surveys)
+    {
+        <p>@survey.Name</p>
+    }
+}
+
+@code {
+    private GetAll.Model? _model;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            _model = await Http.GetFromJsonAsync<GetAll.Model>("api/Survey");
+
+        }
+        catch (AccessTokenNotAvailableException exception)
+        {
+            exception.Redirect();
+        }
+    }
+}
